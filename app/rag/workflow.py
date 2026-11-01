@@ -1,4 +1,5 @@
 import logging
+from datetime import date
 from typing import Literal
 from langchain_groq import ChatGroq
 from langchain_tavily import TavilySearch
@@ -48,7 +49,9 @@ def route_question(state: AgentState):
 You route messages for an enterprise IT support assistant.
 Use kb for questions about company IT policies, VPN, password reset, MFA, laptop setup,
 software access, security, email, devices, troubleshooting, or technology support.
-Use direct only for greetings, thanks, or casual chat that needs no company knowledge.
+Use direct ONLY for greetings, thanks, or small talk that contains no question needing facts.
+Any question that asks for facts (products, versions, prices, news, how-tos, anything that may have changed) is kb,
+even if it is not about the company: the kb path falls back to live web search.
 Question: {state['question']}
 Return valid JSON like {{"route":"kb"}}.
 """)
@@ -77,7 +80,12 @@ def after_kb(state: AgentState) -> Literal["generate_from_kb", "search_web"]:
     return "generate_from_kb" if state["kb_grade"] == "good" else "search_web"
 
 def search_web(state: AgentState):
-    result = web_search_tool().invoke({"query": state["current_query"]})
+    # English queries with the year return far fresher results than e.g. Vietnamese ones
+    query = llm().invoke(f"""Today is {date.today().isoformat()}.
+Write one short English web search query for the question below. If it asks about anything recent,
+current or "latest", include the current year. Return only the query, nothing else.
+Question: {state['current_query']}""").content.strip().strip('"')
+    result = web_search_tool().invoke({"query": query})
     lines, citations = [], []
     if isinstance(result, dict):
         if result.get("answer"):
@@ -92,7 +100,7 @@ def search_web(state: AgentState):
         "web_results": "\n\n".join(lines),
         "citations": citations,
         "source_used": "web",
-        "trace": add_trace(state, "Web fallback → Tavily search"),
+        "trace": add_trace(state, f"Web fallback → Tavily search: {query}"),
     }
 
 def grade_web(state: AgentState):
@@ -144,7 +152,8 @@ Question: {state['question']}\n\nPrivate KB:\n{context}
 def generate_from_web(state: AgentState):
     answer = llm().invoke(f"""
 You are an enterprise IT support copilot. The private company KB was insufficient.
-Answer ONLY from the web evidence below. Clearly say this is external web information and may need IT validation before changing company-managed systems.
+Today is {date.today().isoformat()}. Your own training knowledge may be outdated: answer ONLY from the web evidence below.
+If sources disagree (for example about the latest version of something), prefer the most recent source and say so. Clearly say this is external web information and may need IT validation before changing company-managed systems.
 Question: {state['question']}\n\nWeb evidence:\n{state['web_results']}
 """).content
     return {"answer": answer, "source_used": "web_search", "trace": add_trace(state, "Answer generation → WEB SEARCH")}
