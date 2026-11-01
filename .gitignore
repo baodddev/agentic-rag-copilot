@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# Local tool output and runtime data
+.impeccable/
+.taste-skill/
+data/audit.db
