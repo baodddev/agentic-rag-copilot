@@ -1,6 +1,7 @@
-from app.core.config import get_settings
+from app.services.ingestion import load_file, chunk_documents
+from pathlib import Path
 
-settings = get_settings()
+docs = load_file(Path("data\sample_kb\company_it_handbook.md"))
+docs = chunk_documents(docs)
 
-print(f"App Name: {settings.app_name}")
-print(f"App Name: {settings.groq_api_key }")
+print(len(docs))
