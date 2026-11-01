@@ -36,6 +36,7 @@ app/
 data/sample_kb/        sample knowledge base (Markdown)
 templates/index.html   chat UI
 ingest_sample_kb.py    loads data/sample_kb into Pinecone
+run.py                 starts the dev server (uvicorn with reload)
 ```
 
 ## Run it locally
@@ -88,7 +89,7 @@ Run this once. Running it again adds the same chunks a second time; to reload th
 ### 5. Start the server
 
 ```bash
-uvicorn app.main:app --reload
+python run.py
 ```
 
 - Chat UI: http://localhost:8000

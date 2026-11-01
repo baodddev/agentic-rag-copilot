@@ -1,7 +1,4 @@
-from app.services.ingestion import load_file, chunk_documents
-from pathlib import Path
+import uvicorn
 
-docs = load_file(Path("data\sample_kb\company_it_handbook.md"))
-docs = chunk_documents(docs)
-
-print(len(docs))
+if __name__ == "__main__":
+    uvicorn.run("app.main:app", reload=True)
