@@ -33,7 +33,7 @@ body { margin: 0; background: var(--ground); color: var(--ink); font: 400 17px/1
 button, textarea { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-.app { display: grid; grid-template-columns: minmax(300px, 32%) 1fr; height: 100dvh; }
+.app { display: grid; grid-template-columns: minmax(300px, 32%) 1fr; grid-template-rows: minmax(0, 1fr); height: 100dvh; }
 
 aside { background: var(--field); color: var(--field-ink); padding: 32px; display: flex; flex-direction: column; gap: 40px; overflow: auto; }
 aside h1 { font-size: clamp(40px, 4.4vw, 68px); line-height: .95; letter-spacing: -.035em; margin: 0; font-weight: 700; }
@@ -44,7 +44,7 @@ aside h1 { font-size: clamp(40px, 4.4vw, 68px); line-height: .95; letter-spacing
 .note { margin: auto 0 0; font-size: 16px; max-width: 34ch; }
 .note strong { display: block; font-size: 18px; }
 
-main { display: grid; grid-template-rows: 1fr auto; min-height: 0; }
+main { display: grid; grid-template-rows: minmax(0, 1fr) auto; min-height: 0; }
 #log { overflow: auto; padding: 48px clamp(16px, 5vw, 80px) 24px; display: flex; flex-direction: column; gap: 40px; }
 .empty { margin: auto 0 0; font-size: clamp(22px, 2.2vw, 32px); line-height: 1.3; letter-spacing: -.01em; max-width: 30ch; }
 body.has-chat .empty { display: none; }
@@ -82,7 +82,7 @@ details ol { margin: 8px 0 0; padding-left: 1.3em; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
 @media (max-width: 800px) {
-  .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .app { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
   aside { padding: 16px; gap: 16px; }
   aside h1 { font-size: 36px; }
   .topics { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -90,7 +90,7 @@ details ol { margin: 8px 0 0; padding-left: 1.3em; }
   .topics button:hover { transform: none; }
   .note { display: none; }
   body.has-chat aside { display: none; }
-  body.has-chat .app { grid-template-rows: 1fr; }
+  body.has-chat .app { grid-template-rows: minmax(0, 1fr); }
   #log { padding: 24px 16px; gap: 28px; }
   #composer { padding: 12px 16px 16px; }
   #send { padding: 0 18px; }
